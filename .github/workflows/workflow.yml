@@ -38,7 +38,7 @@ jobs:
     - run: npm run build   
 
   Preparation (terraform):
-    needs: build
+    needs: jobs.build
     name: "Terraform"
     runs-on: ubuntu-latest
     steps:
