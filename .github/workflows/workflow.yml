@@ -103,7 +103,7 @@ jobs:
         cache: 'npm'
     - run: npm install
     - run: npm run lint
-    - run: npm install --save-dev prettier
+    - run: npm install --save-dev prettier # install on 2
     - run: npm run prettier
     - run: CI=true npm run test
     - run: npm run build   
