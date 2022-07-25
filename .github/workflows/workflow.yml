@@ -3,21 +3,21 @@
 
 name: Node.js CI ci
 
-#on:
-#  push:
-#    branches:
-#      - main
-#  pull_request:
-#    branches:
-#      - main
-#      - dev
-#      - staging
-
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main, dev" ]
+    branches:
+      - main
+      - dev
+      - staging
+
+#on:
+#  push:
+#    branches: [ "main" ]
+#  pull_request:
+#    branches: [ "main, dev" ]
 
 jobs:
   build:
