@@ -37,7 +37,8 @@ jobs:
     - run: CI=true npm run test
     - run: npm run build   
 
-  terraform:
+  Preparation (terraform):
+    needs: build
     name: "Terraform"
     runs-on: ubuntu-latest
     steps:
