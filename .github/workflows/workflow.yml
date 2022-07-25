@@ -15,30 +15,8 @@ on:
       - prod
 
 jobs:
-  build:
-    name: "Build"
-    runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [14.x]
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}    
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm install
-    - run: npm run lint
-    - run: npm install --save-dev prettier
-    - run: npm run prettier
-    - run: CI=true npm run test
-    - run: npm run build   
-
-  Preparation:
-    needs: build
+  preparation:
     name: "Preparation"
     runs-on: ubuntu-latest
     steps:
@@ -106,3 +84,26 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
+
+  build:
+    needs: preparation
+    name: "Build and Test"
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}    
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm install
+    - run: npm run lint
+    - run: npm install --save-dev prettier
+    - run: npm run prettier
+    - run: CI=true npm run test
+    - run: npm run build   
