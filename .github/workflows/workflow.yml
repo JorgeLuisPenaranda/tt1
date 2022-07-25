@@ -10,13 +10,7 @@ on:
   pull_request:
     branches:
       - main
-
-#on:
-#  push:
-#    branches: [ "main, dev1, stage1" ]
-#  pull_request:
-#    types: [labeled, reopened, synchronize, ready_for_review]
-#    branches: [ "main, dev1, stage2" ]
+      - dev
 
 jobs:
   build:
