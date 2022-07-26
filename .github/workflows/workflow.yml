@@ -88,8 +88,8 @@ jobs:
 
       - run: pwd
       - run: terraform output web-address
-      - run: output=$(terraform output web-address)
-      - run: echo $output
+      - run: echo TEST=$(terraform output web-address) >> $GITHUB_ENV
+      - run: echo ${{ env.TEST }}
 
   build:
     needs: preparation
