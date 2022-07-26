@@ -16,7 +16,37 @@ on:
 
 jobs:
 
+  build:
+    #needs: preparation
+    name: "Build and Test"
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}    
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm install
+    - run: npm run lint
+    - run: npm install --save-dev prettier # install on 2
+    - run: npm run prettier
+    - run: CI=true npm run test
+    - run: npm run build
+    - run: pwd
+    - run: ls -al
+    - uses: actions/upload-artifact@v2
+      with:
+        name: my-artifact
+        path: build/
+
   preparation:
+    needs: build
     name: "Preparation"
     #if: github.ref == 'refs/heads/DONTRUN' && github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -92,41 +122,6 @@ jobs:
       - run: echo TEST=$(terraform output web-address) >> $GITHUB_ENV
       - run: echo ${{ env.TEST }}
 
-  build:
-    needs: preparation
-    name: "Build and Test"
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [14.x]
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}    
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm install
-    - run: npm run lint
-    - run: npm install --save-dev prettier # install on 2
-    - run: npm run prettier
-    - run: CI=true npm run test
-    - run: npm run build
-    - run: pwd
-    - run: ls -al
-    - uses: actions/upload-artifact@v2
-      with:
-        name: my-artifact
-        path: build/
-
-  deploy:
-    needs: build
-    name: Publish to AWS EC2 Instance
-    runs-on: ubuntu-latest
-
-    steps:
       - uses: actions/download-artifact@v2
         with:
           name: my-artifact
