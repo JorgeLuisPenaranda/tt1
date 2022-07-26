@@ -119,8 +119,8 @@ jobs:
 
       - run: pwd
       - run: terraform output web-address
-      - run: echo TEST=$(terraform output web-address) >> $GITHUB_ENV
-      - run: echo ${{ env.TEST }}
+      - run: echo IPUBADDR=$(terraform output web-address) >> $GITHUB_ENV
+      - run: echo ${{ env.IPUBADDR }}
 
       - uses: actions/download-artifact@v2
         with:
@@ -136,6 +136,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           #SOURCE: "./"
           SOURCE: "builddown/"
-          REMOTE_HOST: "35.164.135.152"
+          #REMOTE_HOST: "35.164.135.152"
+          REMOTE_HOST: ${{ env.IPUBADDR }}
           REMOTE_USER: "ubuntu"
           TARGET: "/home/ubuntu/myapp/"
