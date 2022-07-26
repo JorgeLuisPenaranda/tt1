@@ -5,7 +5,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <div>CIDR Calculator DEV ENV testing</div>
+        <div>CIDR Calculator STAGING ENV</div>
       </header>
       <IPv4Addr />
       <footer>
