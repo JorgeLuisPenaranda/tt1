@@ -1,26 +1,24 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Node.js CI
-
-#on:
-#  push:
-#    branches:
-#      - main
-#  pull_request:
-#    branches:
-#      - main
-#      - dev
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+      - dev
+      - staging
+      - prod
   pull_request:
-    branches: [ "main, dev" ]
+    branches:
+      - main
+      - dev
+      - staging
+      - prod
 
 jobs:
-  build:
 
+  build:
+    #needs: preparation
+    name: "Build and Test"
     runs-on: ubuntu-latest
 
     strategy:
@@ -36,7 +34,114 @@ jobs:
         cache: 'npm'
     - run: npm install
     - run: npm run lint
-    - run: npm install --save-dev prettier
+    - run: npm install --save-dev prettier # install on 2
     - run: npm run prettier
     - run: CI=true npm run test
-    - run: npm run build   
+    - run: npm run build
+    - run: pwd
+    - run: ls -al
+    - uses: actions/upload-artifact@v2
+      with:
+        name: my-artifact
+        path: build/
+
+  preparation:
+    needs: build
+    name: "Preparation"
+    #if: github.ref == 'refs/heads/DONTRUN' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          #terraform_version: 0.12
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+          terraform_wrapper: false
+
+      #- name: Terraform Format
+      #  id: fmt
+      #  run: terraform fmt -check
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+      
+      #- name: Terraform Validate
+      #  id: validate
+      #  run: terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        #if: github.event_name == 'pull_request'
+        run: terraform plan -no-color -input=false
+        continue-on-error: true
+
+      - name: Terraform outputs
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve -input=false
+
+      - run: pwd
+      - run: terraform output web-address
+      - run: echo IPUBADDR=$(terraform output web-address) >> $GITHUB_ENV
+      - run: echo ${{ env.IPUBADDR }}
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: my-artifact
+          path: builddown/
+
+      - run: ls .
+      - run: pwd
+
+      - name: Sleep for 60 seconds
+        run: sleep 20s
+        shell: bash
+
+      - name: Deploy to my EC2 instance
+        uses: easingthemes/ssh-deploy@v2.1.5
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          #SOURCE: "./"
+          SOURCE: "builddown/"
+          #REMOTE_HOST: "35.164.135.152"
+          REMOTE_HOST: ${{ env.IPUBADDR }}
+          REMOTE_USER: "ubuntu"
+          TARGET: "/var/www/html/"
+          #TARGET: "/home/ubuntu/myapp/"
