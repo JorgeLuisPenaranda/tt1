@@ -124,4 +124,4 @@ jobs:
           SOURCE: "./"
           REMOTE_HOST: "35.164.135.152"
           REMOTE_USER: "ubuntu"
-          TARGET: "/home/ubuntu/"
+          TARGET: "/home/ubuntu/myapp/"
