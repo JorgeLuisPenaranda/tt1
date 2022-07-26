@@ -139,4 +139,5 @@ jobs:
           #REMOTE_HOST: "35.164.135.152"
           REMOTE_HOST: ${{ env.IPUBADDR }}
           REMOTE_USER: "ubuntu"
-          TARGET: "/home/ubuntu/myapp/"
+          TARGET: "/var/www/html/"
+          #TARGET: "/home/ubuntu/myapp/"
