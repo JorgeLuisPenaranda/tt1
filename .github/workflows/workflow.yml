@@ -18,7 +18,7 @@ jobs:
 
   preparation:
     name: "Preparation"
-    if: github.ref == 'refs/heads/DONTRUN' && github.event_name == 'push'
+    #if: github.ref == 'refs/heads/DONTRUN' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -87,9 +87,10 @@ jobs:
         run: terraform apply -auto-approve -input=false
 
       - run: output=$(terraform output web-address)
+      - run: echo $output
 
   build:
-    #needs: preparation
+    needs: preparation
     name: "Build and Test"
     runs-on: ubuntu-latest
 
