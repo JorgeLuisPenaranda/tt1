@@ -126,6 +126,9 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: my-artifact
+          path: .
+
+      - run: ls .
         
 
       - name: Deploy to my EC2 instance
