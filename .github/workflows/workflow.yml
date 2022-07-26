@@ -106,4 +106,21 @@ jobs:
     - run: npm install --save-dev prettier # install on 2
     - run: npm run prettier
     - run: CI=true npm run test
-    - run: npm run build   
+    - run: npm run build
+
+  deploy:
+    name: Push to EC2 Instance
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v1
+
+      - name: Deploy to my EC2 instance
+        uses: easingthemes/ssh-deploy@v2.1.5
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          SOURCE: "./"
+          REMOTE_HOST: "35.164.135.152"
+          REMOTE_USER: "ubuntu"
+          TARGET: "/home/ubuntu/"
