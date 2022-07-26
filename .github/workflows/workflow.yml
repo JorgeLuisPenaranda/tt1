@@ -121,10 +121,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get BUILD Folder
-      - uses: actions/download-artifact@v2
-        with:
-          name: my-artifact
+      - name: Checkout the code
+        uses: actions/checkout@v1
 
       - name: Deploy to my EC2 instance
         uses: easingthemes/ssh-deploy@v2.1.5
