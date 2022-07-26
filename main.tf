@@ -52,7 +52,6 @@ resource "aws_instance" "web" {
               #!/bin/bash
               apt-get update
               apt-get install -y apache2
-              sed -i -e 's/80/8080/' /etc/apache2/ports.conf
               echo "Hello World" > /var/www/html/index.html
               chmod -R 777 /var/www/html/
               systemctl restart apache2
@@ -62,8 +61,8 @@ resource "aws_instance" "web" {
 resource "aws_security_group" "web-sg" {
   name = "${random_pet.sg.id}-sg"
   ingress {
-    from_port   = 8080
-    to_port     = 8080
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
