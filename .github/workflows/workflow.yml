@@ -87,7 +87,7 @@ jobs:
         run: terraform apply -auto-approve -input=false
 
   build:
-    needs: preparation
+    #needs: preparation
     name: "Build and Test"
     runs-on: ubuntu-latest
 
