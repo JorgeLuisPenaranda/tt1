@@ -131,7 +131,7 @@ jobs:
       - run: pwd
 
       - name: Sleep for 60 seconds
-        run: sleep 60s
+        run: sleep 20s
         shell: bash
 
       - name: Deploy to my EC2 instance
