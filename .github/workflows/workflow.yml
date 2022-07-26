@@ -107,6 +107,8 @@ jobs:
     - run: npm run prettier
     - run: CI=true npm run test
     - run: npm run build
+    - run: pwd
+    - run: ls -al
 
   deploy:
     needs: build
