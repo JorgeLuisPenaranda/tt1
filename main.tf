@@ -15,7 +15,7 @@ terraform {
     organization = "jlpaorg"
 
     workspaces {
-      name = "gh-actions-dev"
+      name = "gh-actions-stag"
     }
   }
 }
