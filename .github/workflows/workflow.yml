@@ -109,7 +109,8 @@ jobs:
     - run: npm run build
 
   deploy:
-    name: Push to EC2 Instance
+    needs: build
+    name: Publish to AWS EC2 Instance
     runs-on: ubuntu-latest
 
     steps:
