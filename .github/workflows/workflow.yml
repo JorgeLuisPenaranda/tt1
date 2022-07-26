@@ -18,6 +18,7 @@ jobs:
 
   preparation:
     name: "Preparation"
+    if: github.ref == 'refs/heads/DONTRUN' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
