@@ -114,7 +114,7 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        #if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
 
       - run: pwd
@@ -130,7 +130,7 @@ jobs:
       - run: ls .
       - run: pwd
 
-      - name: Sleep for 60 seconds
+      - name: Sleep for 20 seconds
         run: sleep 20s
         shell: bash
 
